@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#7c3aed"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="حساب‌دارم"/>
+<title>💰 حساب‌دارم</title>
+<link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f4f6fb;--card:#fff;--border:#e2e8f0;
+  --income:#16a34a;--expense:#dc2626;--savings:#2563eb;
+  --accent:#7c3aed;--install:#ea580c;
+  --text:#1e293b;--muted:#64748b;--surface:#f1f5f9;
+}
+body{background:var(--bg);color:var(--text);font-family:'Vazirmatn',Tahoma,sans-serif;min-height:100vh;padding-bottom:80px}
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.nav-btn{background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px;font-family:inherit}
+.nav-btn.active{color:var(--accent)}
+.nav-btn span{font-size:20px}
+.sec{padding:16px 14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.balance-card{background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:18px;padding:22px;margin-bottom:14px;text-align:center;box-shadow:0 4px 16px rgba(124,58,237,.25)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.lbl{font-size:11px;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;font-family:inherit;direction:rtl;margin-top:4px}
+.flabel{font-size:11px;color:var(--muted);display:block;margin-top:10px}
+.btn{border:none;border-radius:10px;padding:11px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-top:10px;font-family:inherit}
+.toggle{display:flex;gap:8px;margin-bottom:14px}
+.tbtn{flex:1;border-radius:10px;padding:9px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;border:1.5px solid var(--border);background:var(--surface);color:var(--muted)}
+.tx-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tag{display:inline-block;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600}
+.pbar{height:8px;background:var(--surface);border-radius:4px;overflow:hidden;margin:6px 0}
+.pfill{height:100%;border-radius:4px;transition:width .5s}
+.gc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ic{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.badge{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px}
+.empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.hidden{display:none}
+.cdot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;display:inline-block;margin-left:6px}
+.cdot.sel{border-color:#1e293b}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div style="font-size:19px;font-weight:800;color:var(--accent)">💰 حساب‌دارم</div>
+    <div style="font-size:11px;color:var(--muted)">مدیریت مالی شخصی</div>
+  </div>
+  <button id="urgBtn" class="hidden" onclick="goTab('installments')" style="background:var(--install);border:none;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit"></button>
+</div>
+
+<div id="t-dashboard" class="sec">
+  <div class="balance-card">
+    <div style="font-size:12px;color:rgba(255,255,255,.75);margin-bottom:6px">موجودی کل</div>
+    <div id="balAmt" style="font-size:30px;font-weight:800;color:#fff">۰ تومان</div>
+  </div>
+  <div class="grid2">
+    <div class="sc" style="border-right:4px solid var(--income)"><div class="lbl">💚 درآمد</div><div id="dInc" style="font-size:18px;font-weight:700;color:var(--income)">۰</div><div style="font-size:11px;color:var(--muted)">تومان</div></div>
+    <div class="sc" style="border-right:4px solid var(--expense)"><div class="lbl">❤️ هزینه</div><div id="dExp" style="font-size:18px;font-weight:700;color:var(--expense)">۰</div><div style="font-size:11px;color:var(--muted)">تومان</div></div>
+  </div>
+  <div class="grid2">
+    <div class="sc" style="border-right:4px solid var(--savings)"><div class="lbl">💙 پس‌انداز</div><div id="dSav" style="font-size:16px;font-weight:700;color:var(--savings)">۰</div><div style="font-size:11px;color:var(--muted)">تومان</div></div>
+    <div class="sc" style="border-right:4px solid var(--install)"><div class="lbl">🔔 اقساط فعال</div><div id="dInst" style="font-size:16px;font-weight:700;color:var(--install)">۰</div><div style="font-size:11px;color:var(--muted)">قسط جاری</div></div>
+  </div>
+  <div id="urgDash" class="card hidden" style="border-color:rgba(234,88,12,.4)">
+    <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--install)">⏰ اقساط نزدیک</div>
+    <div id="urgList"></div>
+  </div>
+  <div id="topCats" class="card hidden">
+    <div style="font-weight:700;margin-bottom:12px;font-size:14px">بیشترین هزینه‌ها</div>
+    <div id="topList"></div>
+  </div>
+  <div id="dashEmpty" class="empty"><div style="font-size:40px;margin-bottom:10px">📝</div>هنوز تراکنشی ثبت نشده<br><span style="font-size:12px">برای شروع روی «ثبت» بزنید</span></div>
+</div>
+
+<div id="t-add" class="sec hidden">
+  <div class="card">
+    <div style="font-weight:700;font-size:16px;margin-bottom:14px">ثبت تراکنش جدید</div>
+    <div class="toggle">
+      <button class="tbtn" id="btnExp" onclick="setType('expense')" style="background:var(--expense);border-color:var(--expense);color:#fff">🔴 هزینه</button>
+      <button class="tbtn" id="btnInc" onclick="setType('income')">🟢 درآمد</button>
+    </div>
+    <label class="flabel">مبلغ (تومان)</label>
+    <input type="number" id="txAmt" placeholder="مثلاً ۵۰۰۰۰۰"/>
+    <label class="flabel">دسته‌بندی</label>
+    <select id="txCat"></select>
+    <label class="flabel">توضیح (اختیاری)</label>
+    <input type="text" id="txDesc" placeholder="مثلاً رستوران با دوستان"/>
+    <label class="flabel">تاریخ</label>
+    <input type="date" id="txDate"/>
+    <button id="txBtn" class="btn" style="background:var(--expense)" onclick="addTx()">✅ ثبت هزینه</button>
+  </div>
+</div>
+
+<div id="t-transactions" class="sec hidden">
+  <div class="toggle" style="margin-bottom:14px">
+    <button class="tbtn" id="fAll" onclick="setFilter('all')" style="background:var(--accent);border-color:var(--accent);color:#fff">همه</button>
+    <button class="tbtn" id="fInc" onclick="setFilter('income')">درآمد</button>
+    <button class="tbtn" id="fExp2" onclick="setFilter('expense')">هزینه</button>
+  </div>
+  <div class="card" id="txList"></div>
+</div>
+
+<div id="t-savings" class="sec hidden">
+  <div class="row" style="margin-bottom:14px">
+    <div style="font-weight:700;font-size:16px">🎯 اهداف پس‌انداز</div>
+    <button onclick="toggleGF()" style="background:var(--accent);border:none;border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600">+ هدف جدید</button>
+  </div>
+  <div id="goalForm" class="card hidden">
+    <div style="font-weight:600;margin-bottom:10px">هدف جدید</div>
+    <label class="flabel">عنوان</label><input type="text" id="gTitle" placeholder="مثلاً خرید لپ‌تاپ"/>
+    <label class="flabel">مقدار هدف (تومان)</label><input type="number" id="gTarget"/>
+    <label class="flabel">پس‌انداز فعلی (تومان)</label><input type="number" id="gSaved" placeholder="۰"/>
+    <label class="flabel">رنگ</label>
+    <div id="colorPick" style="margin-top:6px"></div>
+    <button class="btn" style="background:var(--accent)" onclick="addGoal()">✅ ذخیره هدف</button>
+  </div>
+  <div id="goalList"></div>
+</div>
+
+<div id="t-installments" class="sec hidden">
+  <div class="row" style="margin-bottom:14px">
+    <div style="font-weight:700;font-size:16px">🔔 یادآور اقساط</div>
+    <button onclick="toggleIF()" style="background:var(--install);border:none;border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600">+ قسط جدید</button>
+  </div>
+  <div id="instForm" class="card hidden">
+    <div style="font-weight:600;margin-bottom:10px">افزودن قسط جدید</div>
+    <label class="flabel">عنوان</label><input type="text" id="iTitle" placeholder="مثلاً وام ماشین"/>
+    <label class="flabel">مبلغ هر قسط (تومان)</label><input type="number" id="iAmt"/>
+    <div class="g2" style="margin-top:10px">
+      <div><label class="flabel">تعداد کل</label><input type="number" id="iTotal" placeholder="۱۲"/></div>
+      <div><label class="flabel">پرداخت‌شده</label><input type="number" id="iPaid" placeholder="۰"/></div>
+    </div>
+    <div class="g2">
+      <div><label class="flabel">روز سررسید</label><input type="number" id="iDay" min="1" max="31" placeholder="۱۵"/></div>
+      <div><label class="flabel">تاریخ شروع</label><input type="date" id="iStart"/></div>
+    </div>
+    <label class="flabel">یادداشت (اختیاری)</label><input type="text" id="iNote" placeholder="مثلاً بانک ملت"/>
+    <button class="btn" style="background:var(--install)" onclick="addInst()">✅ ذخیره قسط</button>
+  </div>
+  <div id="instList"></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" id="nav-dashboard" onclick="goTab('dashboard')"><span>🏠</span>خانه</button>
+  <button class="nav-btn" id="nav-add" onclick="goTab('add')"><span>➕</span>ثبت</button>
+  <button class="nav-btn" id="nav-transactions" onclick="goTab('transactions')"><span>📋</span>تراکنش‌ها</button>
+  <button class="nav-btn" id="nav-savings" onclick="goTab('savings')"><span>🎯</span>پس‌انداز</button>
+  <button class="nav-btn" id="nav-installments" onclick="goTab('installments')"><span>🔔</span>اقساط</button>
+</nav>
+
+<script>
+const TABS=['dashboard','add','transactions','savings','installments'];
+const CATS={income:['حقوق','فریلنسر','اجاره','سود بانکی','هدیه','سایر درآمد'],expense:['خوراک','مسکن','حمل‌ونقل','سلامت','تفریح','پوشاک','قبض‌ها','آموزش','سایر هزینه']};
+const GOAL_COLORS=['#2563eb','#db2777','#16a34a','#ca8a04','#7c3aed','#ea580c'];
+let txs=ld('txs',[]),goals=ld('goals',[{id:1,title:'صندوق اضطراری',target:10000000,saved:2000000,color:'#2563eb'},{id:2,title:'سفر',target:5000000,saved:500000,color:'#db2777'}]),insts=ld('insts',[]);
+let txType='expense',txFilter='all',gColor='#2563eb';
+
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function fmt(n){return Number(n).toLocaleString('fa-IR');}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function toShamsi(ds){if(!ds)return '';try{return new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(ds));}catch{return ds;}}
+function daysUntil(ds){const t=new Date();t.setHours(0,0,0,0);const d=new Date(ds);d.setHours(0,0,0,0);return Math.round((d-t)/86400000);}
+function sColor(d){if(d<0)return'#dc2626';if(d<=3)return'#ea580c';if(d<=7)return'#ca8a04';return'#16a34a';}
+function sLabel(d){if(d<0)return Math.abs(d)+' روز تأخیر ⚠️';if(d===0)return'امروز! 🔔';if(d===1)return'فردا ⏰';return d+' روز دیگر';}
+function nextDue(inst){const s=new Date(inst.startDate);let m=s.getMonth()+inst.paidInstallments;const y=s.getFullYear()+Math.floor(m/12);m=m%12;return new Date(y,m,Math.min(inst.dueDay||1,28)).toISOString().slice(0,10);}
+function urgents(){return insts.filter(i=>i.paidInstallments<i.totalInstallments&&daysUntil(nextDue(i))<=7);}
+
+function goTab(t){
+  TABS.forEach(id=>{document.getElementById('t-'+id).classList.toggle('hidden',id!==t);document.getElementById('nav-'+id).classList.toggle('active',id===t);});
+  if(t==='dashboard')renderDash();
+  if(t==='transactions')renderTxList();
+  if(t==='savings')renderGoals();
+  if(t==='installments')renderInsts();
+}
+
+function renderDash(){
+  const inc=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const bal=inc-exp;
+  const sav=goals.reduce((s,g)=>s+g.saved,0);
+  const actInst=insts.filter(i=>i.paidInstallments<i.totalInstallments).length;
+  const b=document.getElementById('balAmt');
+  b.textContent=fmt(bal)+' تومان';b.style.color=bal>=0?'#fff':'#fca5a5';
+  document.getElementById('dInc').textContent=fmt(inc);
+  document.getElementById('dExp').textContent=fmt(exp);
+  document.getElementById('dSav').textContent=fmt(sav);
+  document.getElementById('dInst').textContent=fmt(actInst);
+  const urg=urgents();
+  document.getElementById('urgBtn').classList.toggle('hidden',urg.length===0);
+  if(urg.length)document.getElementById('urgBtn').textContent='🔔 '+urg.length+' قسط';
+  const ud=document.getElementById('urgDash');ud.classList.toggle('hidden',urg.length===0);
+  if(urg.length){document.getElementById('urgList').innerHTML=urg.map(i=>{const d=daysUntil(nextDue(i));return`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:13px;font-weight:600">${i.title}</div><div style="font-size:11px;color:var(--muted)">${fmt(i.amount)} تومان</div></div><span class="badge" style="background:${sColor(d)}18;color:${sColor(d)}">${sLabel(d)}</span></div>`;}).join('');}
+  const cats={};txs.filter(t=>t.type==='expense').forEach(t=>{cats[t.category]=(cats[t.category]||0)+t.amount;});
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('topCats').classList.toggle('hidden',top.length===0);
+  if(top.length){document.getElementById('topList').innerHTML=top.map(([c,a])=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>${c}</span><span style="color:var(--expense);font-weight:600">${fmt(a)}</span></div><div class="pbar"><div class="pfill" style="width:${exp>0?a/exp*100:0}%;background:var(--expense)"></div></div></div>`).join('');}
+  document.getElementById('dashEmpty').classList.toggle('hidden',txs.length>0||urg.length>0);
+}
+
+function setType(t){
+  txType=t;
+  document.getElementById('btnExp').style.cssText=t==='expense'?'background:var(--expense);border-color:var(--expense);color:#fff':'';
+  document.getElementById('btnInc').style.cssText=t==='income'?'background:var(--income);border-color:var(--income);color:#fff':'';
+  document.getElementById('txBtn').style.background=t==='income'?'var(--income)':'var(--expense)';
+  document.getElementById('txBtn').textContent='✅ ثبت '+(t==='income'?'درآمد':'هزینه');
+  const sel=document.getElementById('txCat');
+  sel.innerHTML='<option value="">انتخاب کنید...</option>'+CATS[t].map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+
+function addTx(){
+  const amt=parseFloat(document.getElementById('txAmt').value);
+  const cat=document.getElementById('txCat').value;
+  if(!amt||!cat)return;
+  txs.unshift({id:Date.now(),type:txType,amount:amt,category:cat,desc:document.getElementById('txDesc').value,date:document.getElementById('txDate').value||todayISO()});
+  sv('txs',txs);
+  document.getElementById('txAmt').value='';document.getElementById('txDesc').value='';
+  goTab('dashboard');
+}
+
+function setFilter(f){
+  txFilter=f;
+  ['All','Inc','Exp2'].forEach(s=>{document.getElementById('f'+s).style.cssText='';});
+  const map={all:'fAll',income:'fInc',expense:'fExp2'};
+  const col={all:'var(--accent)',income:'var(--income)',expense:'var(--expense)'};
+  document.getElementById(map[f]).style.cssText=`background:${col[f]};border-color:${col[f]};color:#fff`;
+  renderTxList();
+}
+
+function renderTxList(){
+  const list=txFilter==='all'?txs:txs.filter(t=>t.type===txFilter);
+  const el=document.getElementById('txList');
+  if(!list.length){el.innerHTML='<div class="empty">تراکنشی یافت نشد</div>';return;}
+  el.innerHTML=list.map(tx=>`<div class="tx-row"><div><div style="font-weight:600;font-size:14px">${tx.desc||tx.category}</div><div style="display:flex;gap:6px;align-items:center;margin-top:3px"><span class="tag" style="background:${tx.type==='income'?'rgba(22,163,74,.12)':'rgba(220,38,38,.12)'};color:${tx.type==='income'?'var(--income)':'var(--expense)'}">${tx.category}</span><span style="font-size:11px;color:var(--muted)">${toShamsi(tx.date)}</span></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;color:${tx.type==='income'?'var(--income)':'var(--expense)'};font-size:14px">${tx.type==='income'?'+':'-'}${fmt(tx.amount)}</span><button class="del" onclick="delTx(${tx.id})">🗑</button></div></div>`).join('');
+}
+function delTx(id){txs=txs.filter(t=>t.id!==id);sv('txs',txs);renderTxList();renderDash();}
+
+function toggleGF(){document.getElementById('goalForm').classList.toggle('hidden');}
+function initCP(){document.getElementById('colorPick').innerHTML=GOAL_COLORS.map(c=>`<span class="cdot${c===gColor?' sel':''}" style="background:${c}" onclick="pickC('${c}')"></span>`).join('');}
+function pickC(c){gColor=c;initCP();}
+function addGoal(){
+  const t=document.getElementById('gTitle').value,target=parseFloat(document.getElementById('gTarget').value),saved=parseFloat(document.getElementById('gSaved').value)||0;
+  if(!t||!target)return;
+  goals.push({id:Date.now(),title:t,target,saved,color:gColor});sv('goals',goals);
+  document.getElementById('gTitle').value='';document.getElementById('gTarget').value='';document.getElementById('gSaved').value='';
+  document.getElementById('goalForm').classList.add('hidden');renderGoals();
+}
+function addToG(id,amt){goals=goals.map(g=>g.id===id?{...g,saved:Math.min(g.saved+amt,g.target)}:g);sv('goals',goals);renderGoals();}
+function delGoal(id){goals=goals.filter(g=>g.id!==id);sv('goals',goals);renderGoals();}
+function renderGoals(){
+  initCP();
+  const el=document.getElementById('goalList');
+  if(!goals.length){el.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:10px">🎯</div>هنوز هدفی ثبت نشده</div>';return;}
+  el.innerHTML=goals.map(g=>{const pct=g.target>0?g.saved/g.target*100:0;return`<div class="gc"><div class="row" style="margin-bottom:10px"><div style="font-weight:600;font-size:15px">${g.title}</div><button class="del" onclick="delGoal(${g.id})">🗑</button></div><div class="row" style="font-size:12px;color:var(--muted);margin-bottom:4px"><span>پس‌انداز: <span style="color:${g.color};font-weight:600">${fmt(g.saved)}</span></span><span>هدف: ${fmt(g.target)}</span></div><div class="pbar"><div class="pfill" style="width:${Math.min(pct,100)}%;background:${g.color}"></div></div><div class="row" style="font-size:12px"><span style="color:${g.color};font-weight:700">${pct.toFixed(1)}٪</span><span style="color:var(--muted)">باقی: ${fmt(g.target-g.saved)}</span></div><div style="display:flex;gap:6px;margin-top:10px">${[100000,500000,1000000].map(a=>`<button onclick="addToG(${g.id},${a})" style="flex:1;background:${g.color}15;border:1px solid ${g.color}44;border-radius:8px;padding:6px 4px;color:${g.color};cursor:pointer;font-size:11px;font-weight:600;font-family:inherit">+${fmt(a)}</button>`).join('')}</div></div>`;}).join('');
+}
+
+function toggleIF(){document.getElementById('instForm').classList.toggle('hidden');}
+function addInst(){
+  const title=document.getElementById('iTitle').value,amount=parseFloat(document.getElementById('iAmt').value),total=parseInt(document.getElementById('iTotal').value),paid=parseInt(document.getElementById('iPaid').value)||0,day=parseInt(document.getElementById('iDay').value),start=document.getElementById('iStart').value||todayISO(),note=document.getElementById('iNote').value;
+  if(!title||!amount||!total||!day)return;
+  insts.push({id:Date.now(),title,amount,totalInstallments:total,paidInstallments:paid,dueDay:day,startDate:start,note});sv('insts',insts);
+  ['iTitle','iAmt','iTotal','iPaid','iDay','iNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('instForm').classList.add('hidden');renderInsts();renderDash();
+}
+function payInst(id){insts=insts.map(i=>i.id!==id?i:{...i,paidInstallments:Math.min(i.paidInstallments+1,i.totalInstallments)});sv('insts',insts);renderInsts();renderDash();}
+function delInst(id){insts=insts.filter(i=>i.id!==id);sv('insts',insts);renderInsts();renderDash();}
+function renderInsts(){
+  const el=document.getElementById('instList');
+  if(!insts.length){el.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:10px">🔔</div>هیچ قسطی ثبت نشده<br><span style="font-size:12px">با دکمه «قسط جدید» شروع کنید</span></div>';return;}
+  el.innerHTML=insts.map(inst=>{
+    const paid=inst.paidInstallments,total=inst.totalInstallments,rem=total-paid,pct=total>0?paid/total*100:0,done=rem<=0;
+    const nd=done?null:nextDue(inst),days=done?null:daysUntil(nd),sc=done?'#16a34a':sColor(days);
+    return`<div class="ic" style="border-right:4px solid ${sc}"><div class="row" style="margin-bottom:10px;align-items:flex-start"><div><div style="font-weight:700;font-size:15px">${inst.title}</div>${inst.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${inst.note}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center"><span class="badge" style="background:${sc}18;color:${sc}">${done?'✅ تمام‌شده':sLabel(days)}</span><button class="del" onclick="delInst(${inst.id})">🗑</button></div></div><div class="row" style="font-size:13px;margin-bottom:6px"><span style="color:var(--muted)">مبلغ: <span style="color:var(--install);font-weight:600">${fmt(inst.amount)}</span></span><span style="color:var(--muted)">${paid} از ${total} قسط</span></div><div class="pbar"><div class="pfill" style="width:${Math.min(pct,100)}%;background:${done?'var(--income)':'var(--install)'}"></div></div><div class="row" style="font-size:12px"><span style="color:var(--muted)">باقی: <span style="font-weight:600;color:var(--text)">${fmt(rem*inst.amount)} تومان</span></span>${!done?`<span style="color:var(--muted)">سررسید: ${toShamsi(nd)}</span>`:''}</div>${!done?`<button onclick="payInst(${inst.id})" style="margin-top:10px;background:rgba(234,88,12,.12);border:1px solid rgba(234,88,12,.4);border-radius:8px;padding:8px;color:var(--install);cursor:pointer;font-size:13px;font-weight:600;width:100%;font-family:inherit">✅ پرداخت قسط ${paid+1}</button>`:''}</div>`;
+  }).join('');
+}
+
+// init
+document.getElementById('txDate').value=todayISO();
+document.getElementById('iStart').value=todayISO();
+setType('expense');
+renderDash();
+</script>
+</body>
+</html>
